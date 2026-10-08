@@ -1,0 +1,90 @@
+conf t
+int gi1
+ip nat outside
+int g3
+ip nat inside
+access-list 1 permit any
+ip nat inside source list 1 int g1 overload
+end
+
+
+sudo su
+hostname WEB1
+ifconfig eth0 10.11.11.102 netmask 255.255.255.224 up
+route add default gw 10.11.11.113
+ping 10.11.11.113
+
+
+conf t
+ip nat inside source static tcp 10.11.11.101 80 208.8.8.200 8080
+ip nat inside source static tcp 10.11.11.102 443 208.8.8.200 8443
+ip nat inside source static tcp 10.11.11.101 443 208.8.8.200 443
+ip nat inside source static tcp 10.11.11.102 80 208.8.8.200 80
+
+
+conf t
+ip nat inside source static tcp 10.11.11.101 22 208.8.8.200 2222
+ip nat inside source static tcp 10.11.11.102 22 208.8.8.200 2049
+end
+
+
+conf t
+ no ip access-list extended FWP5
+ ip access-list extended FWP5
+ permit tcp Any host www.bet100.com eq 2000 log
+ permit tcp Any host www.bet100.com eq 5060 log
+ permit icmp Any host www.bet100.com log
+ permit tcp Any host www.bet100.com eq 143 log
+ permit tcp Any host www.bet100.com eq 25 log
+ permit tcp Any host www.bet100.com eq 110 log
+ permit tcp Any host www.bet100.com eq 21 log
+ permit tcp Any host www.bet100.com eq 69 log
+ permit tcp Any host www.bet100.com eq 123 log
+
+ Int gig 1
+  ip access-group FWP5 in
+  end
+
+
+sccp
+sip
+imap - 143
+smtp - 25
+pop3 - 110
+ftp - 20
+ftp - 21
+tftp - 69
+ntp - 123
+
+
+conf t
+monitor session 1 source int fa0/3,fa0/5,fa0/7
+monitor session 1 dest int fa0/1,fa0/9
+end
+
+
+youporn.com 66.254.114.79
+pornhub.com 66.254.114.41
+vivamax.com 64.98.135.95
+redtube.com 66.254.114.238
+faketaxi.com 66.254.114.234
+xhamster.com 104.16.3.8
+sulasok.com  185.53.179.136
+bangbus.com 66.254.114.234
+
+
+!@UTM-PH [action] [address]
+conf t
+ip access-list standard FWP1
+deny 66.254.114.0 0.0.0.255
+deny 104.16.3.8 
+deny 64.98.135.95 
+deny 185.53.179.136 
+permit any
+int gig 1
+ip access-group FWP1 in
+end
+
+
+
+
